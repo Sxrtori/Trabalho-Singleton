@@ -1,0 +1,45 @@
+public class Configuracao
+{
+    private static Configuracao _instancia;
+    private static readonly object _lock = new object();
+    public string StringConexao { get; private set; }
+    public int Timeout { get; private set; }
+
+    private Configuracao()
+    {
+        StringConexao = "Server=myServerAddress;Database=myDataBase;";
+        Timeout = 30;
+    }
+    public static Configuracao GetInstance()
+    {
+        lock (_lock)
+        {
+            if (_instancia == null)
+            {
+                _instancia = new Configuracao();
+            }
+        }
+        return _instancia;
+    }
+    public void AtualizarConfiguracoes(string novaStringConexao, int novoTimeout)
+    {
+        StringConexao = novaStringConexao;
+        Timeout = novoTimeout;
+    }
+}
+class Program
+{
+    static void Main(string[] args)
+    {
+        Configuracao configuracao = Configuracao.GetInstance();
+
+        Console.WriteLine($"String de Conexão: {configuracao.StringConexao}");
+        Console.WriteLine($"Timeout: {configuracao.Timeout}");
+
+        configuracao.AtualizarConfiguracoes("Server=newServerAddress;Database=newDataBase;", 60);
+
+        Configuracao configuracaoAtualizada = Configuracao.GetInstance();
+        Console.WriteLine($"String de Conexão Atualizada: {configuracaoAtualizada.StringConexao}");
+        Console.WriteLine($"Timeout Atualizado: {configuracaoAtualizada.Timeout}");
+    }
+}
